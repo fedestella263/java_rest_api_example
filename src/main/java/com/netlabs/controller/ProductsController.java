@@ -38,7 +38,7 @@ public class ProductsController {
 
     // Update product.
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Product> updateNote(@PathVariable(value = "id") Long productId, @Valid @RequestBody Product productDetails) {
+    public ResponseEntity<Product> updateProduct(@PathVariable(value = "id") Long productId, @RequestBody Product productDetails) {
         Product product = productsRepository.findOne(productId);
         if(product == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

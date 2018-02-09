@@ -1,10 +1,15 @@
 package com.netlabs.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
+import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
-import javax.validation.constraints.Digits;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "products")
@@ -21,13 +26,15 @@ public class Product {
 	@NotBlank
 	private String description;
 	
-	@NotEmpty
-    @Digits(integer=10, fraction=0)
-    private String stock;
+	@NotNull
+    private Integer stock;
 	
-	@NotEmpty
-    @Digits(integer=10, fraction=0)
-    private String lowThresholdStock;
+	@NotNull
+	private Integer lowThresholdStock;
+	
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Purchase> purchases;
 
     public Long getId() {
         return id;
@@ -49,19 +56,27 @@ public class Product {
         this.description = description;
     }
 
-    public String getStock() {
+    public Integer getStock() {
         return stock;
     }
 
-    public void setStock(String stock) {
+    public void setStock(Integer stock) {
         this.stock = stock;
     }
 
-    public String getLowThresholdStock() {
+    public Integer getLowThresholdStock() {
         return lowThresholdStock;
     }
 
-    public void setLowThresholdStock(String lowThresholdStock) {
+    public void setLowThresholdStock(Integer lowThresholdStock) {
         this.lowThresholdStock = lowThresholdStock;
     }
+
+	public List<Purchase> getPurchases() {
+		return purchases;
+	}
+
+	public void setPurchases(List<Purchase> purchases) {
+		this.purchases = purchases;
+	}
 }
