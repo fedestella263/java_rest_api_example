@@ -10,9 +10,11 @@ import java.util.Collection;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/purchases")
@@ -23,13 +25,13 @@ public class PurchasesController {
     @Autowired
     ProductsRepository productsRepository;
     
-	// Get all purchases.
+	// Obtener todas las compras.
  	@RequestMapping(method = RequestMethod.GET)
  	public ResponseEntity<Collection<Purchase>> getAllPurchases() {
  		return new ResponseEntity<>(purchasesRepository.findAll(), HttpStatus.OK);
  	}
 	
-	// Get one purchase.
+	// Obtener una compra.
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Purchase> getPurchase(@PathVariable Long id) {
 		Purchase purchase = purchasesRepository.findOne(id);
@@ -41,17 +43,27 @@ public class PurchasesController {
 		}
 	}
     
-	// Create purchase.
+	// Crear una nueva compra.
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Purchase> createPurchase(@Valid @RequestBody Purchase purchase) {
+	public ResponseEntity<?> createPurchase(@Valid @RequestBody Purchase purchase) {
+		
+		purchasesRepository.save(purchase);
 		Product product = productsRepository.findOne(purchase.getProduct().getId());
-		product.setStock(product.getStock()-1);
-		productsRepository.save(product);
-		purchase.setProduct(product);
-		return new ResponseEntity<>(purchasesRepository.save(purchase), HttpStatus.CREATED);
+		product.setStock(product.getStock()-purchase.getAmount());
+		productsRepository.save(product);		
+
+		// Retorna en header - location la URI hacia la nueva compra.
+	    HttpHeaders httpHeaders = new HttpHeaders();
+	    httpHeaders.setLocation(ServletUriComponentsBuilder
+            .fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(purchase.getId())
+            .toUri());
+	 
+	    return new ResponseEntity<>(httpHeaders, HttpStatus.CREATED);
 	}
 	
-	// Delete purchase.
+	// Eliminar una compra.
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> deletePurchase(@PathVariable(value = "id") Long purchaseId) {
 		Purchase purchase = purchasesRepository.findOne(purchaseId);

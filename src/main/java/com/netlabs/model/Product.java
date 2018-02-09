@@ -1,15 +1,15 @@
 package com.netlabs.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "products")
@@ -21,15 +21,19 @@ public class Product {
 	private Long id;
 	
 	@NotBlank
+	@Size(min = 1, max = 64)
 	private String name;
 	
 	@NotBlank
+	@Size(min = 1, max = 256)
 	private String description;
 	
 	@NotNull
+	@Min(0)
     private Integer stock;
 	
 	@NotNull
+	@Min(0)
 	private Integer lowThresholdStock;
 	
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

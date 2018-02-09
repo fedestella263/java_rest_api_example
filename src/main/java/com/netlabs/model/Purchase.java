@@ -1,8 +1,14 @@
 package com.netlabs.model;
 
+import java.util.Date;
+
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
+import org.springframework.data.annotation.CreatedDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -18,6 +24,15 @@ public class Purchase {
 	@Column(name = "purchase_id")
 	private Long id; 
 	
+	@NotNull
+	@Min(1)
+	private Integer amount;
+	
+	@CreatedDate
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private Date createdDate;
+	
 	@ManyToOne
 	@JoinColumn (name="product_id")
 	private Product product;
@@ -30,11 +45,27 @@ public class Purchase {
 		this.id = id;
 	}
 
+	public Integer getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Integer amount) {
+		this.amount = amount;
+	}
+
 	public Product getProduct() {
 		return product;
 	}
 
 	public void setProduct(Product product) {
 		this.product = product;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 }

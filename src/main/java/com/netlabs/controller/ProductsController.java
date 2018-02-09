@@ -4,6 +4,8 @@ import com.netlabs.model.Product;
 import com.netlabs.repository.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import javax.validation.Valid;
@@ -18,13 +20,13 @@ public class ProductsController {
     @Autowired
     ProductsRepository productsRepository;
     
-    // Get all products.
+    // Obtener todos los productos.
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<Collection<Product>> getAllProducts() {
 		return new ResponseEntity<>(productsRepository.findAll(), HttpStatus.OK);
 	}
 	
-	// Get one product.
+	// Obtener un producto.
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Product> getProduct(@PathVariable Long id) {
 		Product product = productsRepository.findOne(id);
@@ -36,7 +38,7 @@ public class ProductsController {
 		}
 	}
 
-    // Update product.
+    // Editar un producto.
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<Product> updateProduct(@PathVariable(value = "id") Long productId, @RequestBody Product productDetails) {
         Product product = productsRepository.findOne(productId);
@@ -53,13 +55,24 @@ public class ProductsController {
         return ResponseEntity.ok(updatedProduct);
     }
 	
-	// Create product.
+	// Crear un nuevo producto.
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> createProduct(@Valid @RequestBody Product product) {
-		return new ResponseEntity<>(productsRepository.save(product), HttpStatus.CREATED);
+		
+		productsRepository.save(product);
+		
+		// Retorna en header - location la URI hacia el nuevo producto.
+	    HttpHeaders httpHeaders = new HttpHeaders();
+	    httpHeaders.setLocation(ServletUriComponentsBuilder
+            .fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(product.getId())
+            .toUri());
+	    
+		return new ResponseEntity<>(httpHeaders, HttpStatus.CREATED);
 	}
 	
-	// Delete product.
+	// Eliminar un producto.
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> deleteProduct(@PathVariable(value = "id") Long productId) {
 		Product product = productsRepository.findOne(productId);
