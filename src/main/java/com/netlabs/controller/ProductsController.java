@@ -51,5 +51,24 @@ public class ProductsController {
 
         Product updatedProduct = productsRepository.save(product);
         return ResponseEntity.ok(updatedProduct);
-    }	
+    }
+	
+	// Create product.
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<?> createProduct(@Valid @RequestBody Product product) {
+		return new ResponseEntity<>(productsRepository.save(product), HttpStatus.CREATED);
+	}
+	
+	// Delete product.
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Void> deleteProduct(@PathVariable(value = "id") Long productId) {
+		Product product = productsRepository.findOne(productId);
+		
+		if (product != null) {
+			productsRepository.delete(productId);
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+	}
 }
