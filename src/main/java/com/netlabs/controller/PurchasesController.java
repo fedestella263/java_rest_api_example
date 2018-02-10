@@ -50,6 +50,10 @@ public class PurchasesController {
 		purchasesRepository.save(purchase);
 		Product product = productsRepository.findOne(purchase.getProduct().getId());
 		product.setStock(product.getStock()-purchase.getAmount());
+		
+		if(product.getStock() < product.getCategory().getLowThresholdStock())
+			product.setLowStockFlag(1);
+		
 		productsRepository.save(product);		
 
 		// Retorna en header - location la URI hacia la nueva compra.
