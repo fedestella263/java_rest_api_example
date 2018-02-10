@@ -3,7 +3,7 @@ package com.netlabs.model;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 
@@ -20,7 +20,8 @@ public class Category {
 	@Min(0)
 	private Integer lowThresholdStock;
 	
-	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "category", orphanRemoval=true)
+	@JsonIgnore
 	private List<Product> products;
 
     public Long getId() {

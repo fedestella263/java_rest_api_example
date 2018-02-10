@@ -4,7 +4,6 @@ import com.netlabs.model.Category;
 import com.netlabs.model.Product;
 import com.netlabs.repository.CategoriesRepository;
 import com.netlabs.repository.ProductsRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import javax.validation.Valid;
-
 import java.util.Collection;
 import java.util.List;
 
