@@ -1,7 +1,10 @@
 package com.netlabs.controller;
 
 import com.netlabs.model.Product;
+import com.netlabs.model.Purchase;
 import com.netlabs.repository.ProductsRepository;
+import com.netlabs.repository.PurchasesRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,13 +15,14 @@ import javax.validation.Valid;
 
 import java.util.Collection;
 
-
 @RestController
 @RequestMapping("/products")
 public class ProductsController {
 
     @Autowired
     ProductsRepository productsRepository;
+    @Autowired
+    PurchasesRepository purchasesRepository;
     
     // Obtener todos los productos.
 	@RequestMapping(method = RequestMethod.GET)
@@ -36,6 +40,12 @@ public class ProductsController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
+	}
+	
+	// Obtener las compras de un determinado producto y fecha.
+	@RequestMapping(value = "/{id}/purchases", method = RequestMethod.GET)
+	public ResponseEntity<Collection<Purchase>> getPurchasesFromProductByDate(@RequestParam("createdDate") String createdDate) {
+ 		return new ResponseEntity<>(purchasesRepository.findByCreatedDate(createdDate), HttpStatus.OK);
 	}
 
     // Editar un producto.
