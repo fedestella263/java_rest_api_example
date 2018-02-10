@@ -31,7 +31,7 @@ public class Purchase {
 	@CreatedDate
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", locale = "es-UY", timezone = "America/Montevideo")
-	private Date createdDate;
+	private Date date;
 	
 	@ManyToOne
 	@JoinColumn (name="product_id")
@@ -61,11 +61,11 @@ public class Purchase {
 		this.product = product;
 	}
 
-	public Date getCreatedDate() {
-		return createdDate;
+	public Date getDate() {
+		return date;
 	}
 
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
+	public void setDate(Date date) {
+		this.date = date;
 	}
 }

@@ -59,7 +59,9 @@ public class ProductsController {
         product.setName(productDetails.getName());
         product.setDescription(productDetails.getDescription());
         product.setStock(productDetails.getStock());
-        product.setLowThresholdStock(productDetails.getLowThresholdStock());
+        product.setPrice(productDetails.getPrice());
+        product.setLowStockFlag(productDetails.getLowStockFlag());
+        product.setCategory(productDetails.getCategory());
 
         Product updatedProduct = productsRepository.save(product);
         return ResponseEntity.ok(updatedProduct);
@@ -68,7 +70,8 @@ public class ProductsController {
 	// Crear un nuevo producto.
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> createProduct(@Valid @RequestBody Product product) {
-		
+		System.out.println(product.getId());
+		System.out.println(product.getName());
 		productsRepository.save(product);
 		
 		// Retorna en header - location la URI hacia el nuevo producto.

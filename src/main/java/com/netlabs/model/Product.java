@@ -9,10 +9,15 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "products")
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "id")
 public class Product {
 
 	@Id
@@ -27,18 +32,24 @@ public class Product {
 	@NotBlank
 	@Size(min = 1, max = 256)
 	private String description;
-	
+
 	@NotNull
 	@Min(0)
     private Integer stock;
 	
 	@NotNull
 	@Min(0)
-	private Integer lowThresholdStock;
+    private Integer price;
+	
+    private Integer lowStockFlag = 0;
 	
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	@JsonIgnore
 	private List<Purchase> purchases;
+	
+	@ManyToOne
+	@JoinColumn (name="category_id")
+	private Category category;
 
     public Long getId() {
         return id;
@@ -68,12 +79,20 @@ public class Product {
         this.stock = stock;
     }
 
-    public Integer getLowThresholdStock() {
-        return lowThresholdStock;
+    public Integer getPrice() {
+        return price;
     }
 
-    public void setLowThresholdStock(Integer lowThresholdStock) {
-        this.lowThresholdStock = lowThresholdStock;
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public Integer getLowStockFlag() {
+        return lowStockFlag;
+    }
+
+    public void setLowStockFlag(Integer lowStockFlag) {
+        this.lowStockFlag = lowStockFlag;
     }
 
 	public List<Purchase> getPurchases() {
@@ -82,5 +101,13 @@ public class Product {
 
 	public void setPurchases(List<Purchase> purchases) {
 		this.purchases = purchases;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 }
