@@ -45,6 +45,64 @@ public class PurchasesController {
 			throw new EntityNotFoundException("Purchase was not found for parameter {id=" + id + "}");
 		}
 	}
+
+    // Editar una compra.
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateCategory(@PathVariable Long id, @Valid @RequestBody Purchase purchaseDetails, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+    		return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad arguments", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+		
+        Purchase purchase = purchasesRepository.findOne(id);
+        if(purchase == null) {
+			throw new EntityNotFoundException("Purchase was not found for parameter {id=" + id + "}");
+        }
+        
+        // Diferente producto.
+        if(purchase.getProduct().getId() != purchaseDetails.getProduct().getId()) {
+        	Integer oldAmount = purchase.getAmount();
+        	Product oldProduct = productsRepository.findOne(purchase.getProduct().getId());
+        	Product newProduct = productsRepository.findOne(purchaseDetails.getProduct().getId());
+    		
+        	// Validaciones para el nuevo producto.
+    		if(newProduct == null)
+    			throw new EntityNotFoundException("Product was not found for parameter {id=" + purchase.getProduct().getId() + "}");
+    		
+        	if(purchaseDetails.getAmount() > newProduct.getStock())
+    			return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "The available stock in the new product is " + newProduct.getStock()), HttpStatus.BAD_REQUEST);
+        	
+        	newProduct.setStock(newProduct.getStock()-purchaseDetails.getAmount());    		
+    		if(newProduct.getStock() <= newProduct.getCategory().getLowThresholdStock())
+    			newProduct.setLowStockFlag(1);
+    		
+    		productsRepository.save(newProduct);	
+        	
+        	// Se guarda el producto.
+        	purchase.setProduct(newProduct);
+        	
+        	// Se retorna el stock del antiguo producto.
+        	oldProduct.setStock(oldProduct.getStock() + oldAmount);
+			
+			if(oldProduct.getStock() > oldProduct.getCategory().getLowThresholdStock())
+				oldProduct.setLowStockFlag(0);
+			
+			productsRepository.save(oldProduct);
+
+		// Se mantiene el producto.
+        } else {
+        	purchase.getProduct().setStock(purchase.getProduct().getStock() - (purchaseDetails.getAmount()-purchase.getAmount()));
+
+			if(purchase.getProduct().getStock() > purchase.getProduct().getCategory().getLowThresholdStock())
+				purchase.getProduct().setLowStockFlag(0);
+			else
+				purchase.getProduct().setLowStockFlag(1);
+			
+			productsRepository.save(purchase.getProduct());
+        }
+        
+        purchase.setAmount(purchaseDetails.getAmount());
+        return ResponseEntity.ok(purchasesRepository.save(purchase));
+    }
     
 	// Crear una nueva compra.
 	@RequestMapping(method = RequestMethod.POST)

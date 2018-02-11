@@ -57,7 +57,7 @@ public class ProductsController {
 
     // Editar un producto.
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateProduct(@PathVariable Long id,@Valid @RequestBody Product productDetails, BindingResult bindingResult) {
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @Valid @RequestBody Product productDetails, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
     		return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad arguments", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
         }

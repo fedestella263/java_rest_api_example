@@ -17,7 +17,7 @@ public class Purchase {
 	private Long id; 
 	
 	@NotNull(message = "can't be null")
-	@Min(value = 0, message = "it has to be greater than or equal to 1")
+	@Min(value = 1, message = "it has to be greater than or equal to 1")
 	private Integer amount;
 	
 	@CreatedDate

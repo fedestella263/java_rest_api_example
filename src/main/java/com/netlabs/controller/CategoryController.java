@@ -47,7 +47,7 @@ public class CategoryController {
 
     // Editar una categoría.
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails,@Valid BindingResult bindingResult) {
+    public ResponseEntity<?> updateCategory(@PathVariable Long id, @Valid @RequestBody Category categoryDetails, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
     		return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad arguments", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
         }
@@ -66,8 +66,7 @@ public class CategoryController {
     		productsRepository.save(product);
         }
 
-        Category updatedCategory = categoriesRepository.save(category);
-        return ResponseEntity.ok(updatedCategory);
+        return ResponseEntity.ok(categoriesRepository.save(category));
     }
 	
 	// Crear una nueva categoría.
