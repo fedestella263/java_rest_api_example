@@ -53,14 +53,19 @@ public class PurchasesController {
     		return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad arguments", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
         }
 		
-		if(productsRepository.findOne(purchase.getProduct().getId()) == null)
+		Product product = productsRepository.findOne(purchase.getProduct().getId());
+		
+		if(product == null)
 			throw new EntityNotFoundException("Product was not found for parameter {id=" + purchase.getProduct().getId() + "}");
 		
+		if(purchase.getAmount() > product.getStock())
+			return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "The available stock is " + product.getStock()), HttpStatus.BAD_REQUEST);
+		
+		purchase.setProduct(product);
 		purchasesRepository.save(purchase);
-		Product product = productsRepository.findOne(purchase.getProduct().getId());
 		product.setStock(product.getStock()-purchase.getAmount());
 		
-		if(product.getStock() < product.getCategory().getLowThresholdStock())
+		if(product.getStock() <= product.getCategory().getLowThresholdStock())
 			product.setLowStockFlag(1);
 		
 		productsRepository.save(product);		
@@ -84,6 +89,10 @@ public class PurchasesController {
 		if (purchase != null) {
 			Product product = productsRepository.findOne(purchase.getProduct().getId());
 			product.setStock(product.getStock() + purchase.getAmount());
+			
+			if(product.getStock() > product.getCategory().getLowThresholdStock())
+				product.setLowStockFlag(0);
+			
 			productsRepository.save(product);
 			purchasesRepository.delete(id);
 			return new ResponseEntity<Void>(HttpStatus.OK);

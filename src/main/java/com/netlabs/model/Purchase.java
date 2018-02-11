@@ -22,7 +22,7 @@ public class Purchase {
 	
 	@CreatedDate
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy", locale = "es-UY", timezone = "America/Montevideo")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", locale = "es-UY", timezone = "America/Montevideo")
 	private Date date;
 	
 	@ManyToOne

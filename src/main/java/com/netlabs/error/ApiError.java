@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ApiError {
 	private HttpStatus status;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss", locale = "es-UY", timezone = "America/Montevideo")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", locale = "es-UY", timezone = "America/Montevideo")
 	private LocalDateTime timestamp;
 	private String message;
 	private List<FieldErrorDTO> fieldErrors = new ArrayList<>();
@@ -24,7 +24,7 @@ public class ApiError {
 	    this.status = status;
 	}
 
-	ApiError(HttpStatus status, String message) {
+	public ApiError(HttpStatus status, String message) {
 		this();
 		this.status = status;	
 		this.message = message;

@@ -35,7 +35,7 @@ public class Product {
     private Integer price;
 
 	@Min(value = 0, message = "it has to be 1 or 0")
-	@Max(value = 0, message = "it has to be 1 or 0")
+	@Max(value = 1, message = "it has to be 1 or 0")
     private Integer lowStockFlag = 0;
 	
 	@OneToMany(mappedBy = "product", orphanRemoval=true)
