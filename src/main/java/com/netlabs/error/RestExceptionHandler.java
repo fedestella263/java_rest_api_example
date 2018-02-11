@@ -26,4 +26,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
 		return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, ex.getMessage()));
 	}	
+	
+	@ExceptionHandler(NoStockAvailableException.class)
+	protected ResponseEntity<Object> handleNoStockAvailable(NoStockAvailableException ex) {
+		return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage()));
+	}	
+	
+	@ExceptionHandler(BadArgumentsException.class)
+	protected ResponseEntity<Object> handleBadArguments(BadArgumentsException ex) {
+		return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getFieldsErrors()));
+	}	
 }

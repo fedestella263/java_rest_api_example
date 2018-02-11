@@ -25,7 +25,7 @@ public class ApiError {
 	}
 
 	public ApiError(HttpStatus status, String message) {
-		this();
+		this(); 
 		this.status = status;	
 		this.message = message;
 	}
