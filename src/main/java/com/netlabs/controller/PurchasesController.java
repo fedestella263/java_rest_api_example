@@ -82,6 +82,9 @@ public class PurchasesController {
 		Purchase purchase = purchasesRepository.findOne(id);
 		
 		if (purchase != null) {
+			Product product = productsRepository.findOne(purchase.getProduct().getId());
+			product.setStock(product.getStock() + purchase.getAmount());
+			productsRepository.save(product);
 			purchasesRepository.delete(id);
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} else {
