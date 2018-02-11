@@ -1,5 +1,6 @@
 package com.netlabs.controller;
 
+import com.netlabs.error.ApiError;
 import com.netlabs.model.Category;
 import com.netlabs.model.Product;
 import com.netlabs.repository.CategoriesRepository;
@@ -10,6 +11,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
@@ -37,16 +41,20 @@ public class CategoryController {
 		if (category != null) {
 			return new ResponseEntity<>(category, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("Category was not found for parameter {id=" + id + "}");
 		}
 	}
 
     // Editar una categoría.
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId, @RequestBody Category categoryDetails) {
-        Category category = categoriesRepository.findOne(categoryId);
+    public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails,@Valid BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+    		return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad arguments", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+		
+        Category category = categoriesRepository.findOne(id);
         if(category == null) {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("Category was not found for parameter {id=" + id + "}");
         }
 
         category.setLowThresholdStock(categoryDetails.getLowThresholdStock());
@@ -64,7 +72,10 @@ public class CategoryController {
 	
 	// Crear una nueva categoría.
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<?> createCategory(@Valid @RequestBody Category category) {
+	public ResponseEntity<?> createCategory(@Valid @RequestBody Category category, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+    		return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad arguments", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
 		
 		categoriesRepository.save(category);
 		
@@ -81,14 +92,14 @@ public class CategoryController {
 	
 	// Eliminar una categoría.
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Void> deleteCategory(@PathVariable(value = "id") Long categoryId) {
-		Category category = categoriesRepository.findOne(categoryId);
+	public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+		Category category = categoriesRepository.findOne(id);
 		
 		if (category != null) {
-			categoriesRepository.delete(categoryId);
+			categoriesRepository.delete(id);
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("Category was not found for parameter {id=" + id + "}");
 		}
 	}
 }

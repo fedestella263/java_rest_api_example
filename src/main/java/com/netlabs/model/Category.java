@@ -16,9 +16,9 @@ public class Category {
 	@Column(name = "category_id")
 	private Long id;
 	
-	@NotNull
-	@Min(0)
-	private Integer lowThresholdStock;
+	@NotNull(message = "can't be null")
+	@Min(value = 0, message = "it has to be greater than or equal to 0")
+    private Integer lowThresholdStock;
 	
 	@OneToMany(mappedBy = "category", orphanRemoval=true)
 	@JsonIgnore

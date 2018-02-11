@@ -1,5 +1,6 @@
 package com.netlabs.controller;
 
+import com.netlabs.error.ApiError;
 import com.netlabs.model.Product;
 import com.netlabs.model.Purchase;
 import com.netlabs.repository.ProductsRepository;
@@ -7,12 +8,14 @@ import com.netlabs.repository.PurchasesRepository;
 
 import java.util.Collection;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -39,13 +42,19 @@ public class PurchasesController {
 		if (purchase != null) {
 			return new ResponseEntity<>(purchase, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("Purchase was not found for parameter {id=" + id + "}");
 		}
 	}
     
 	// Crear una nueva compra.
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<?> createPurchase(@Valid @RequestBody Purchase purchase) {
+	public ResponseEntity<?> createPurchase(@Valid @RequestBody Purchase purchase, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+    		return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "Bad arguments", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+		
+		if(productsRepository.findOne(purchase.getProduct().getId()) == null)
+			throw new EntityNotFoundException("Product was not found for parameter {id=" + purchase.getProduct().getId() + "}");
 		
 		purchasesRepository.save(purchase);
 		Product product = productsRepository.findOne(purchase.getProduct().getId());
@@ -69,14 +78,14 @@ public class PurchasesController {
 	
 	// Eliminar una compra.
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Void> deletePurchase(@PathVariable(value = "id") Long purchaseId) {
-		Purchase purchase = purchasesRepository.findOne(purchaseId);
+	public ResponseEntity<Void> deletePurchase(@PathVariable Long id) {
+		Purchase purchase = purchasesRepository.findOne(id);
 		
 		if (purchase != null) {
-			purchasesRepository.delete(purchaseId);
+			purchasesRepository.delete(id);
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("Purchase was not found for parameter {id=" + id + "}");
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package com.netlabs.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,22 +18,24 @@ public class Product {
 	@Column(name = "product_id")
 	private Long id;
 	
-	@NotBlank
-	@Size(min = 1, max = 64)
+	@NotBlank(message = "can't be blank")
+	@Size(min = 1, max = 64, message = "the size has to be between 1 and 64")
 	private String name;
 	
-	@NotBlank
+	@NotBlank(message = "can't be blank")
 	@Size(min = 1, max = 256)
 	private String description;
 
-	@NotNull
-	@Min(0)
+	@NotNull(message = "can't be null")
+	@Min(value = 0, message = "it has to be greater than or equal to 0")
     private Integer stock;
 	
-	@NotNull
-	@Min(0)
+	@NotNull(message = "can't be null")
+	@Min(value = 0, message = "it has to be greater than or equal to 0")
     private Integer price;
-	
+
+	@Min(value = 0, message = "it has to be 1 or 0")
+	@Max(value = 0, message = "it has to be 1 or 0")
     private Integer lowStockFlag = 0;
 	
 	@OneToMany(mappedBy = "product", orphanRemoval=true)
@@ -41,6 +44,7 @@ public class Product {
 	
 	@ManyToOne
 	@JoinColumn (name="category_id")
+	@NotNull(message = "can't be null")
 	private Category category;
 
     public Long getId() {

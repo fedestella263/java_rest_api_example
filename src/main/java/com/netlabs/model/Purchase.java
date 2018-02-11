@@ -16,17 +16,18 @@ public class Purchase {
 	@Column(name = "purchase_id")
 	private Long id; 
 	
-	@NotNull
-	@Min(1)
+	@NotNull(message = "can't be null")
+	@Min(value = 0, message = "it has to be greater than or equal to 1")
 	private Integer amount;
 	
 	@CreatedDate
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", locale = "es-UY", timezone = "America/Montevideo")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy", locale = "es-UY", timezone = "America/Montevideo")
 	private Date date;
 	
 	@ManyToOne
 	@JoinColumn (name="product_id")
+	@NotNull(message = "can't be null")
 	private Product product;
 
 	public Long getId() {
