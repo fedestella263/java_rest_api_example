@@ -73,7 +73,10 @@ public class PurchaseService {
 			productService.update(oldProduct);
 
 		// Se mantiene el producto.
-        } else {
+        } else {        	
+        	if(purchaseDetails.getAmount() > (purchase.getProduct().getStock() + purchase.getAmount()))
+        		throw new NoStockAvailableException(purchase.getProduct().getStock() + purchase.getAmount()); 
+        	
         	purchase.getProduct().setStock(purchase.getProduct().getStock() - (purchaseDetails.getAmount()-purchase.getAmount()));
 
 			if(purchase.getProduct().getStock() >= purchase.getProduct().getCategory().getLowThresholdStock())
