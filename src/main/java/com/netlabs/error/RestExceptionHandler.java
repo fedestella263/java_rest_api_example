@@ -1,6 +1,9 @@
 package com.netlabs.error;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,4 +39,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleBadArguments(BadArgumentsException ex) {
 		return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getFieldsErrors()));
 	}	
+	
+	@ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handle(Exception ex, HttpServletRequest request, HttpServletResponse response) {
+    	return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"));
+    }
 }
