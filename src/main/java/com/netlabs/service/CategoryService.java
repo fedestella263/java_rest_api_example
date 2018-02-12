@@ -46,7 +46,7 @@ public class CategoryService {
         // Obtiene todos los productos y actualiza la bandera de bajo stock.
         List<Product> products = category.getProducts();
         for(Product product : products) {
-    		product.setLowStockFlag((product.getStock() <= category.getLowThresholdStock() ? 1 : 0));
+    		product.setLowStockFlag((product.getStock() < category.getLowThresholdStock() ? 1 : 0));
     		productService.update(product.getId(), product);
         }
 

@@ -56,7 +56,7 @@ public class PurchaseService {
         		throw new NoStockAvailableException(newProduct.getStock());   
     		
         	newProduct.setStock(newProduct.getStock()-purchaseDetails.getAmount());    		
-    		if(newProduct.getStock() <= newProduct.getCategory().getLowThresholdStock())
+    		if(newProduct.getStock() < newProduct.getCategory().getLowThresholdStock())
     			newProduct.setLowStockFlag(1);
     		
     		productService.update(newProduct);	
@@ -67,7 +67,7 @@ public class PurchaseService {
         	// Se retorna el stock del antiguo producto.
         	oldProduct.setStock(oldProduct.getStock() + oldAmount);
 			
-			if(oldProduct.getStock() > oldProduct.getCategory().getLowThresholdStock())
+			if(oldProduct.getStock() >= oldProduct.getCategory().getLowThresholdStock())
 				oldProduct.setLowStockFlag(0);
 			
 			productService.update(oldProduct);
@@ -76,7 +76,7 @@ public class PurchaseService {
         } else {
         	purchase.getProduct().setStock(purchase.getProduct().getStock() - (purchaseDetails.getAmount()-purchase.getAmount()));
 
-			if(purchase.getProduct().getStock() > purchase.getProduct().getCategory().getLowThresholdStock())
+			if(purchase.getProduct().getStock() >= purchase.getProduct().getCategory().getLowThresholdStock())
 				purchase.getProduct().setLowStockFlag(0);
 			else
 				purchase.getProduct().setLowStockFlag(1);
@@ -106,7 +106,7 @@ public class PurchaseService {
 		purchasesRepository.save(purchase);
 		product.setStock(product.getStock()-purchase.getAmount());
 		
-		if(product.getStock() <= product.getCategory().getLowThresholdStock())
+		if(product.getStock() < product.getCategory().getLowThresholdStock())
 			product.setLowStockFlag(1);
 		
 		productService.update(product);	
@@ -119,7 +119,7 @@ public class PurchaseService {
 			Product product = productService.findOne(purchase.getProduct().getId());
 			product.setStock(product.getStock() + purchase.getAmount());
 			
-			if(product.getStock() > product.getCategory().getLowThresholdStock())
+			if(product.getStock() >= product.getCategory().getLowThresholdStock())
 				product.setLowStockFlag(0);
 			
 			productService.update(product);

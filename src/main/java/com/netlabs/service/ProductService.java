@@ -63,7 +63,7 @@ public class ProductService {
         product.setPrice(productDetails.getPrice());
         product.setCategory(category);
         
-        if(product.getStock() <= category.getLowThresholdStock())
+        if(product.getStock() < category.getLowThresholdStock())
         	product.setLowStockFlag(1);
         else
         	product.setLowStockFlag(0);
